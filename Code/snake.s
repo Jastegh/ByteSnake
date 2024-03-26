@@ -373,7 +373,26 @@ endGame:
 
 
 
-
+#-------------------------------------------------------------------------------
+# convertToStringPoints
+#   This function converts the points as number to characters and then prints them 
+# 
+#-------------------------------------------------------------------------------
+#
+# Register Usage:
+#       Temporary registers are reused within the function
+#
+#	t0: loads the value of POINTS
+#	s0: stores the integer 10 used in calculations
+# 	s2: used for copying register 
+#	s3: stores the length of the digit
+#	s4: used for copying register 
+#	s5: used for copying register 
+#	a0: stores the value to be printed
+#       a1: row number 
+# 	a2: column number
+#
+#-------------------------------------------------------------------------------
 convertToStringPoints:
 	addi sp , sp , -24
 	sw ra,0(sp)
@@ -522,7 +541,27 @@ convertToStringPoints:
 		addi sp , sp , 24
 		ret
 
-	
+
+#-------------------------------------------------------------------------------
+# convertToStringPoints
+#   This function converts the GAME_TIME as number to characters and then prints them 
+# 
+#-------------------------------------------------------------------------------
+#
+# Register Usage:
+#       Temporary registers are reused within the function
+#
+#	t0: loads the value of GAME_TIME
+#	s0: stores the integer 10 used in calculations
+# 	s2: used for copying register 
+#	s3: stores the length of the digit
+#	s4: used for copying register 
+#	s5: used for copying register 
+#	a0: stores the value to be printed
+#       a1: row number 
+# 	a2: column number
+#
+#-------------------------------------------------------------------------------
 convertToStringTime:
 	addi sp , sp , -24
 	sw ra,0(sp)
@@ -764,7 +803,13 @@ saveregistor:
 gameLoop:	
 
 	j direction
-	
+
+#-------------------------------------------------------------------------------
+# direction:
+#   This function checks for the direction input and all the stop condition for
+#   the game
+#
+#-------------------------------------------------------------------------------	
 direction:
 	# Print the Game time on Display  
 	addi sp, sp , -4
@@ -1015,7 +1060,23 @@ moveDown:
 
 	
 	
-	
+#-------------------------------------------------------------------------------
+# drawSnake
+#   This function draws the snake according to its direction changed
+#   the time and points
+#
+# 
+#-------------------------------------------------------------------------------
+#
+# Register Usage:
+#       Temporary registers are reused within the function
+#
+#	a0: used to store the value snake components to be printed 
+#	a1: used to store the row number snake components to be printed 
+#	a2: used to store the column number snake components to be printed 
+#
+#
+#-------------------------------------------------------------------------------
 drawSnake:
 	addi sp,sp -4
 	sw ra, 0(sp)
@@ -1078,8 +1139,6 @@ drawSnake:
 	mv a1, t1
 	mv a2, t3
 	jal printChar
-	
-	
 	
 	
 
