@@ -99,7 +99,9 @@ Brick:      .asciz "#"
 
 snakeGame:
 	addi sp, sp ,-4
-	sw ra, 0(sp)
+	sw sp, 0(sp)
+	
+	
 	#csrrw a0, 0x040, a0             # uscratch
 	
 	
@@ -258,22 +260,22 @@ printApple:
 	
 	ret
 
-wallCheck:
-	lw t0, SNAKE_HEAD_ROW
-	lw t1, SNAKE_HEAD_COL
+#wallCheck:
+	#lw t0, SNAKE_HEAD_ROW
+	#lw t1, SNAKE_HEAD_COL
 	
-	li t2, 10
-	li t3, 20
+	#li t2, 10
+	#li t3, 20
 	
 	# row condition
-	bge  t0, t2, snakeGame
-	blez t0, snakeGame
+	#bge  t0, t2, endGame
+	#blez t0, snakeGame
 	
 	# column condition
-	bge t1, t3, snakeGame
-	blez t1, snakeGame
-	
-	ret
+	#bge t1, t3, endGame
+	#blez t1, endGame
+
+	#ret
 
 
 
@@ -657,8 +659,12 @@ secondcheck:
 printAgain:
 	#add bonus time
 	lw t4, BONUS_TIME
-	lw t5, GAME_TIME
-	add t5, t5, t4
+	
+	la t5, GAME_TIME
+	lw t6, 0(t5)
+	
+	add t6, t6, t4
+	sw t6, 0(t5)
 	
 	# print new apple	
 	addi sp, sp, -4
@@ -706,7 +712,7 @@ direction:
 	addi sp, sp , -4
 	sw ra, 0(sp)
 	##### maybe call wall condition here 	
-	jal ra, wallCheck 
+	#jal ra, wallCheck                              ###################
 	lw ra, 0(sp)
 	addi sp, sp, 4
 	
@@ -738,12 +744,16 @@ direction:
 	j waitfortimer
 	
 	
-swapCord:
 
+
+				
+moveRight:
+	  
 	la s0, SNAKE_HEAD_COL
 	lw s2, 0(s0) 
 	la s1, SNAKE_HEAD_ROW      
 	lw s3, 0(s1)
+	
 	
 	
 	la s4, COMPONENT_ONE_COL
@@ -753,6 +763,8 @@ swapCord:
 	lw s7, 0(s5)                       ### value for the next component
 	sw s3, 0(s5)
 	
+	addi s2, s2,1           ## update head
+	sw s2, 0(s0)
 	
 	la s8, COMPONENT_TWO_COL
 	lw s10, 0(s8)                      ### value for the next component
@@ -769,45 +781,10 @@ swapCord:
 	lw t3, 0(t1)                       ### value for the next component
 	sw s11, 0(t1)
 	
-	
-	la t0, COMPONENT_FOUR_COL
-	#lw t2, 0(t0)                      ### value for the next component
-	sw t2, 0(t0)
-	la t1, COMPONENT_FOUR_ROW
-	#lw t, 0(t1)                       ### value for the next component
-	sw t3, 0(t1)
-	
-	
-	
-	#la t0, SNAKE_TAIL_SPACE
-	#lw t1, 0(t0)
-	#sw t2, 
-	#li a0, 0x20
-	#sw a0,0(t2)
-	#sw a0,0(t3)
-	
-	#li t0, SNAKE_TAIL_SPACE
-	#sw t2, 0(t0)
-	#la t1, COMPONENT_THREE_ROW
-	#lw t3, 0(t1)                       ### value for the next component
-	#sw s11, 0(t1)
-	
-	#mv a1,t0
-	#mv a2, t
-	#li a0, 0x20
-	#jal printChar
-	
-	ret
-
-				
-moveRight:
-	  
-	jal swapCord
-	la t0, SNAKE_HEAD_COL
-	lw s1, 0(t0)
-	addi s6, s1,1
-	sw s6, 0(t0)
-
+         mv a1, t3
+	 mv a2, t2
+	 li a0, 0x20
+	 jal printChar
 	jal drawSnake
 	
 	la t0, FLAG
@@ -816,11 +793,42 @@ moveRight:
 	j waitfortimer
     	
 moveLeft:
-	jal swapCord
-	la t0, SNAKE_HEAD_COL
-	lw s1, 0(t0)
-	addi s6, s1,-1
-	sw s6, 0(t0)	
+	la s0, SNAKE_HEAD_COL
+	lw s2, 0(s0) 
+	la s1, SNAKE_HEAD_ROW      
+	lw s3, 0(s1)
+		
+	
+	la s4, COMPONENT_ONE_COL
+	lw s6, 0(s4)                      ### value for the next component
+	sw s2, 0(s4)
+	la s5, COMPONENT_ONE_ROW
+	lw s7, 0(s5)                       ### value for the next component
+	sw s3, 0(s5)
+	
+	addi s2, s2,-1           ## update head
+	sw s2, 0(s0)
+	
+	la s8, COMPONENT_TWO_COL
+	lw s10, 0(s8)                      ### value for the next component
+	sw s6, 0(s8)
+	la s9, COMPONENT_TWO_ROW
+	lw s11, 0(s9)                       ### value for the next component
+	sw s7, 0(s9)
+	
+	
+	la t0, COMPONENT_THREE_COL
+	lw t2, 0(t0)                      ### value for the next component
+	sw s10, 0(t0)
+	la t1, COMPONENT_THREE_ROW
+	lw t3, 0(t1)                       ### value for the next component
+	sw s11, 0(t1)
+	
+         mv a1, t3
+	 mv a2, t2
+	 li a0, 0x20
+	 jal printChar
+
 
 	jal drawSnake
 	
@@ -830,11 +838,42 @@ moveLeft:
     	
 
 moveUp:
-	jal swapCord
-	la t0, SNAKE_HEAD_ROW
-	lw s1, 0(t0)
-	addi s6, s1,-1
-	sw s6, 0(t0)	
+	la s0, SNAKE_HEAD_COL
+	lw s2, 0(s0) 
+	la s1, SNAKE_HEAD_ROW      
+	lw s3, 0(s1)
+	
+	
+	la s4, COMPONENT_ONE_COL
+	lw s6, 0(s4)                      ### value for the next component
+	sw s2, 0(s4)
+	la s5, COMPONENT_ONE_ROW
+	lw s7, 0(s5)                       ### value for the next component
+	sw s3, 0(s5)
+	
+	addi s3, s3,-1           ## update head
+	sw s3, 0(s1)
+	
+	la s8, COMPONENT_TWO_COL
+	lw s10, 0(s8)                      ### value for the next component
+	sw s6, 0(s8)
+	la s9, COMPONENT_TWO_ROW
+	lw s11, 0(s9)                       ### value for the next component
+	sw s7, 0(s9)
+	
+	
+	la t0, COMPONENT_THREE_COL
+	lw t2, 0(t0)                      ### value for the next component
+	sw s10, 0(t0)
+	la t1, COMPONENT_THREE_ROW
+	lw t3, 0(t1)                       ### value for the next component
+	sw s11, 0(t1)
+	
+         mv a1, t3
+	 mv a2, t2
+	 li a0, 0x20
+	 jal printChar
+
 
 	jal drawSnake
 	
@@ -844,12 +883,42 @@ moveUp:
 	j waitfortimer
 
 moveDown:
-	jal swapCord
-	la t0, SNAKE_HEAD_ROW
-	lw s1, 0(t0)
-	addi s6, s1,1
-	sw s6, 0(t0)	
-
+	la s0, SNAKE_HEAD_COL
+	lw s2, 0(s0) 
+	la s1, SNAKE_HEAD_ROW      
+	lw s3, 0(s1)
+	
+	
+	la s4, COMPONENT_ONE_COL
+	lw s6, 0(s4)                      ### value for the next component
+	sw s2, 0(s4)
+	la s5, COMPONENT_ONE_ROW
+	lw s7, 0(s5)                       ### value for the next component
+	sw s3, 0(s5)
+	
+	addi s3, s3,1           ## update head
+	sw s3, 0(s1)
+	
+	la s8, COMPONENT_TWO_COL
+	lw s10, 0(s8)                      ### value for the next component
+	sw s6, 0(s8)
+	la s9, COMPONENT_TWO_ROW
+	lw s11, 0(s9)                       ### value for the next component
+	sw s7, 0(s9)
+	
+	
+	la t0, COMPONENT_THREE_COL
+	lw t2, 0(t0)                      ### value for the next component
+	sw s10, 0(t0)
+	la t1, COMPONENT_THREE_ROW
+	lw t3, 0(t1)                       ### value for the next component
+	sw s11, 0(t1)
+	
+         mv a1, t3
+	 mv a2, t2
+	 li a0, 0x20
+	 jal printChar
+	 
 	jal drawSnake	
 	
 	la t0, FLAG
@@ -858,35 +927,6 @@ moveDown:
 	j waitfortimer
 
 	
-	
-#clearPoint: 
-	#lw a2, COMPONENT_THREE_COL                               ######################
-	#lw a1, COMPONENT_THREE_ROW
-	#li a0, 0x20
-	#jal printChar
-	#ret	
-	
-	#la t1, COMPONENT_ONE_COL
-	#lw s2, 0(t1)
-	#mv s3, s1
-	#sw s3, 0(t1)	
-	
-	#la t1, COMPONENT_TWO_COL
-	#lw s3, 0(t1)
-	#mv s4, s2
-	#sw s4, 0(t1)
-	
-	#la t1, COMPONENT_THREE_COL
-	#lw s5, 0(t1)
-	#mv s5, s3
-	#sw s5, 0(t1)
-	
-	#######################
-	
-	
-	#j waitfortimer
-	
-	#jal moveRight	
 	
 	
 drawSnake:
@@ -953,40 +993,9 @@ drawSnake:
 	jal printChar
 	
 	
-	  # 4th component  (space
-	#la t0, COMPONENT_FOUR_ROW
-	#lw t1, 0(t0)	
-	#la t2, COMPONENT_FOUR_COL
-	#lw t3, 0(t2)
-	# Print the snake body
-	#la t0, SNAKE_TAIL_SPACE
-	#lb a0, 0(t0)
-	#mv a1, t1
-	#mv a2, t3
-	#jal printChar
 	
 	
-		
-			
-				
-	#######################################				
-	#li t1,0x77
-	#li t2,0x61
-	#li t3,0x73
-	#i t4,0x64
-	
-	#     la t5, keyInput           # address of keyInput
-	
-	#     lw t6, 0(t5)               #user input in t6
-	
-	
-	#beq t1,t6, moveUp
-	#beq t2,t6, moveLeft
-	#beq t3,t6, moveDown
-	#beq t4,t6, moveRight
-
-	
-	
+endGame:
 	lw ra, 0(sp)
 	addi sp,sp 4
 	ret
