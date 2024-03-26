@@ -37,7 +37,7 @@
 #
 # Author: Jastegh Singh
 # Date:   24th March, 2024
-# TA:     
+# TA:     Christiaan/ Sachin/ Aaron
 #
 #-------------------------------
 
@@ -55,6 +55,7 @@ SNAKE_BODY_1:        .asciz  "1"
 SNAKE_BODY_2:        .asciz  "2"
 SNAKE_BODY_3:        .asciz  "3"
 
+Have_eaten:          .word   0
 POINTS:              .word    0
 SNAKE_HEAD_ROW:          .word  5
 SNAKE_HEAD_COL:           .word  10
@@ -101,45 +102,44 @@ snakeGame:
 	addi sp, sp ,-4
 	sw sp, 0(sp)
 	
+	# Enabling user-level interrupts
+	csrrwi zero, 0, 0x01                                                  # making the 0th bit 1    
 	
-	#csrrw a0, 0x040, a0             # uscratch
 	
+	# Enabling user-level timer interrupts and user-level external interrupts
+	csrwi 4, 0x110	                                                      # changing the 4th and 8th bit to 1  
 	
-	#enable user-level interrupts
-	csrrwi zero, 0, 0x01                 # making the 0th bit 1    # ustatus =CSR0 (0)
-	# csrwi 0,0x01   OR
-	
-	# enable user-level timer interrupts and user-level external interrupts
-	# changing the 4th and 8th bit to 1  
-	csrwi 4, 0x110	
-	
-	#store the address of the interrupt handler in utvec (CSR 5)
+	# Storing the address of the handler in utvec (CSR 5)
 	la t0, handler
 	csrw t0, 5	
 	
-	#keyboard control
+	# Setting the bit 1 of this register Keyboard control to 1
 	li t1, 0xFFFF0000
 	li t2,2
-	sw t2,0(t1)                   # bit 1 of this register set to 1
+	sw t2,0(t1)                                                           # bit 1 of this register set to 1
 	
 	
-	#print the initial string 
+	# Printing  the initial string - Preparation screen
 	la a0, INITIAL_STRING
 	li a1, 0
 	li a2, 0
 	jal printStr
 
-	# level 1, 2 or 3
-	li t0,0x31
-	li t1,0x32
-	li t2,0x33
+	lw ra , 0(sp)
+	addi sp , sp , 4
+	
+	
+	# Checking what level was selected
+	li t0,0x31                                                            # 1
+	li t1,0x32                                                            # 2
+	li t2,0x33                                                            # 3
 	j loopLevel
 	
 	
 loopLevel:
-	la t3, keyInput           # address of keyInput
-	
-	lw t4, 0(t3)               #user input in t4
+        # Keeps taking input until valid Level 1,2 0r 3 is selected
+	la t3, keyInput                                                       # loading the address of the global variable keyInput
+	lw t4, 0(t3)                                                          # loading the user input value in t4
 	
 	beq t0,t4, levelOne
 	beq t1,t4, levelTwo
@@ -148,86 +148,117 @@ loopLevel:
 	j loopLevel
 	
 levelOne:
-	la t0, GAME_TIME               # address of TIME
-	#ebreak	
+	# If Level 1 is selected set the time and and bonus time for level one
+	
+	la t0, GAME_TIME                                                        # load the address of GAME_TIME
+
 	li t1, 120
 	sw t1, 0(t0)
-	#ebreak
-	la t2, BONUS_TIME	
+
+	la t2, BONUS_TIME	                                                # load the address of BONUS_TIME
 	li t3, 8
 	sw t3, 0(t2)
 	
 	j buildGame
 
 levelTwo:
-	la t0, GAME_TIME              # address of TIME
+	# If Level 2 is selected set the time and and bonus time for level two
+	
+	la t0, GAME_TIME               						# load the address of GAME_TIME
 	li t1, 30
 	sw t1, 0(t0)
 	
-	la t2, BONUS_TIME	
+	la t2, BONUS_TIME	                                                # load the address of BONUS_TIME
 	li t3, 5
 	sw t3, 0(t2)
 	
 	j buildGame
 	
 levelThree:
-	la t0, GAME_TIME              # address of TIME
+	# If Level 3 is selected set the time and and bonus time for level three
+	
+	la t0, GAME_TIME              						#  load the address of GAME_TIME
 	li t1, 15
 	sw t1, 0(t0)
 	
-	la t2, BONUS_TIME	
+	la t2, BONUS_TIME	                                                # load the address of BONUS_TIME
 	li t3, 3
 	sw t3, 0(t2)
 	
 	j buildGame
 	
-	
+
+#-------------------------------------------------------------------------------
+# buildGame
+#   This function clears the Preparatuon screen and loads the Game screen, and
+#   builds the structure of the game. 
+# 
+#-------------------------------------------------------------------------------
+#
+# Register Usage:
+#       Temporary registers are reused within the function
+#
+#	t0: loads the address of SNAKE_HEAD_ROW
+#	s1: holds the address of SNAKE_HEAD_COL
+#	t2: holds the value of SNAKE_HEAD_ROW
+#	t3: holds the value of SNAKE_HEAD_COL
+#	t4: loads the address of APPLE_ROW
+#	t5: loads the address of APPLE_COL
+#	t6: loads the value of APPLE_ROW
+#	a1: loads the value of APPLE_COL
+#
+#-------------------------------------------------------------------------------
 buildGame:
-	# empty space
+	addi sp, sp ,-4
+	sw sp, 0(sp)
+	
+	# Clearing the Preparation screen 
 	li a0, 100
 	li a1, 0
 	li a2, 0
 	li a3, 0x20
-	jal printMultipleSameChars
+	jal ra, printMultipleSameChars
 	
-	# Build walls
-	jal printAllWalls
+	# Building the walls/boundaries
+	jal ra, printAllWalls
 	
-	# print "seconds and points"
+	# Print suffix strings "seconds" and "points"
 	la a0, POINTS_STRING
 	li a1, 0
 	li a2, 28
-	jal printStr
+	jal ra, printStr
 	
 	la a0, SECONDS_STRING
 	li a1, 1
 	li a2, 28
-	jal printStr
+	jal ra, printStr
 	
 	
 	# TIME INTERRUPT
-	li s1,0xFFFF0018                             # TIME
-   	li s2,0xFFFF0020                             # TIMECMP
+	li s1,0xFFFF0018                             					# TIME
+   	li s2,0xFFFF0020                                                                # TIMECMP
    	
-   	
+   	# Updating time 
    	lw s3, 0(s1)                                #  current time 
    	addi s5, s3, 1000                           #  increment 1 sec(1000ms)
    	sw s5, 0(s2)                                #  store value to timecmp
 	
-	# print apple
-	jal printApple                             ##################################
+	# Printing the first apple
+	jal ra, printApple                             
 	
-	#snake implementation here or gameLoop ??	
-	jal drawSnake                              ######################
+	# Draw the snake at the m iddle of the screen	
+	jal ra, drawSnake
+	
+	lw ra, 0(sp)
+	addi sp, sp, 4
 	
 	j waitfortimer
 	
 waitfortimer:
-	wfi
 	la t0, FLAG
 	lw t1, 0(t0)
 	li t2, 1
-	beq t1, t2, gameLoop                ######################	
+	beq t1, t2, gameLoop                	
 	j waitfortimer
 	
 
@@ -237,13 +268,13 @@ printApple:
 	sw s0, 4(sp)
 	sw s1, 8(sp)
 	
-	################################
+
 	# APPLE
-	jal random
+	jal ra, random
 	mv s0, a0           #row
 	addi s0,s0,1           #add 1
-	#
-	jal random
+	
+	jal ra, random
 	mv s1, a0          #column	
 	addi s1,s1, 1         #add 1
 	     # Print apple
@@ -251,7 +282,7 @@ printApple:
 	lb a0, 0(t0)
 	mv a1,s0
 	mv a2,s1
-	jal printChar
+	jal ra, printChar
 	
 	lw s0, 4(sp)
 	lw s1, 8(sp)
@@ -260,28 +291,35 @@ printApple:
 	
 	ret
 
-#wallCheck:
-	#lw t0, SNAKE_HEAD_ROW
-	#lw t1, SNAKE_HEAD_COL
+wallCheck:
+	lw t0, SNAKE_HEAD_ROW
+	lw t1, SNAKE_HEAD_COL
 	
-	#li t2, 10
-	#li t3, 20
-	
+	li t2, 10
+	li t3, 20
+	li t4, 1
 	# row condition
-	#bge  t0, t2, endGame
-	#blez t0, snakeGame
+	bge  t0, t2, endGame
+	ble t0,t4 snakeGame
 	
 	# column condition
-	#bge t1, t3, endGame
-	#blez t1, endGame
+	bge t1, t3, endGame
+	ble t1,t4 endGame
 
-	#ret
+	ret
 
 
 
 
 
 convertToStringPoints:
+	addi sp , sp , -24
+	sw s0 , 0(sp)
+	sw s1 , 4(sp)
+	sw s2 , 8(sp)
+	sw s3 , 12(sp)
+	sw s4 , 16(sp)
+	sw s5 , 20(sp)
 	
 	li s0, 10 
 	
@@ -317,11 +355,9 @@ convertToStringPoints:
 		li a1, 1
 		li a2, 25
 		
-		addi sp, sp, -4
-		sw ra, 0(sp)
+		
 		jal ra, printChar
-		lw ra, 0(sp)
-		addi sp, sp, 4
+		
 		
 		#Print zero
 		li t0, 0
@@ -332,11 +368,9 @@ convertToStringPoints:
 		li a1, 1
 		li a2, 24
 		
-		addi sp, sp, -4
-		sw ra, 0(sp)
+		
 		jal ra, printChar
-		lw ra, 0(sp)
-		addi sp, sp, 4
+		
 		
 		
 		li t0, 0
@@ -345,13 +379,11 @@ convertToStringPoints:
 		li a1, 1
 		li a2, 23
 		
-		addi sp, sp, -4
-		sw ra, 0(sp)
-		jal ra, printChar
-		lw ra, 0(sp)
-		addi sp, sp, 4
 		
-		ret
+		jal ra, printChar
+		
+		
+		j regis
 	two_digit2:
 		rem t1, t0, s0 # set remainder to t0/10  12/10 = 2 right most dig
 		div t3, t0, s0 # get rid of right most digit 12/10 = 1
@@ -374,34 +406,27 @@ convertToStringPoints:
 		li a1, 1
 		li a2, 25
 		
-		addi sp, sp, -4
-		sw ra, 0(sp)
+		
 		
 		jal ra, printChar
-		lw ra, 0(sp)
-		addi sp, sp, 4
 		
 		mv a0, s3
 		li a1, 1
 		li a2, 24
 		
-		addi sp, sp, -4
-		sw ra, 0(sp)
+		
 		jal ra, printChar
-		lw ra, 0(sp)
-		addi sp, sp, 4
+		
 		
 		mv a0, s4
 		li a1, 1
 		li a2, 23
 		
-		addi sp, sp, -4
-		sw ra, 0(sp)
-		jal ra, printChar
-		lw ra, 0(sp)
-		addi sp, sp, 4
 		
-		ret
+		jal ra, printChar
+		
+		
+		j regis
 		
 		
 	
@@ -457,6 +482,16 @@ convertToStringPoints:
 		lw ra, 0(sp)
 		addi sp, sp, 4
 
+		j regis
+	regis:
+			
+		lw s0 , 0(sp)
+		lw s1 , 4(sp)
+		lw s2 , 8(sp)
+		lw s3 , 12(sp)
+		lw s4 , 16(sp)
+		lw s5 , 20(sp)
+		addi sp , sp , 24
 		ret
 
 
@@ -639,7 +674,27 @@ convertToStringTime:
 
 		ret
 	
-
+#-------------------------------------------------------------------------------
+# eatApple
+#   This function checks whether the snae head and apple collide, and if they do update
+#   the time and points
+#
+# 
+#-------------------------------------------------------------------------------
+#
+# Register Usage:
+#       Temporary registers are reused within the function
+#
+#	t0: loads the address of SNAKE_HEAD_ROW
+#	s1: holds the address of SNAKE_HEAD_COL
+#	t2: holds the value of SNAKE_HEAD_ROW
+#	t3: holds the value of SNAKE_HEAD_COL
+#	t4: loads the address of APPLE_ROW
+#	t5: loads the address of APPLE_COL
+#	t6: loads the value of APPLE_ROW
+#	a1: loads the value of APPLE_COL
+#
+#-------------------------------------------------------------------------------	
 eatApple:
 	la t0, SNAKE_HEAD_ROW
 	la t1, SNAKE_HEAD_COL
@@ -657,6 +712,10 @@ secondcheck:
 	beq t3,a1, printAgain
 	ret
 printAgain:
+	la t0, Have_eaten
+	li t1, 1
+	sw t1, 0(t0)
+	
 	#add bonus time
 	lw t4, BONUS_TIME
 	
@@ -674,22 +733,8 @@ printAgain:
 	addi sp, sp, 4
 	ret
 	
-##################################
-gameLoop:
-	
-	#jal printApple
-	
-	
-	#la t0,SNAKE_HEAD_ROW
-	#la t1, SNAKE_HEAD_COL
-	#la a0, SNAKE_HEAD
-	#lw a1, 0(t0)
-	#lw a2, 0(t1)
-	#jal printStr
-	
-	# NOT CLEARING RIGHT NOW
-	# CKHECKING THE DIRECTIONS
-	 # Check the current direction and move the snake accordingly
+
+gameLoop:	
 
 	j direction
 	
@@ -712,7 +757,7 @@ direction:
 	addi sp, sp , -4
 	sw ra, 0(sp)
 	##### maybe call wall condition here 	
-	#jal ra, wallCheck                              ###################
+	jal ra, wallCheck                              ###################
 	lw ra, 0(sp)
 	addi sp, sp, 4
 	
@@ -996,6 +1041,15 @@ drawSnake:
 	
 	
 endGame:
+	lw s0, 4(sp)
+    	lw s1, 8(sp)
+    	lw s2, 12(sp)
+    	lw s3, 16(sp)
+    	lw s4, 20(sp)
+    	lw s5, 24(sp)
+    	lw s6, 28(sp)
+    	lw s7, 32(sp)
+    	lw s8, 36(sp)
 	lw ra, 0(sp)
 	addi sp,sp 4
 	ret
