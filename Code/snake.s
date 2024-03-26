@@ -300,13 +300,16 @@ wallCheck:
 	li t4, 1
 	# row condition
 	bge  t0, t2, endGame
-	ble t0,t4 snakeGame
+	ble t0,t4 endGame
 	
 	# column condition
 	bge t1, t3, endGame
 	ble t1,t4 endGame
-
 	ret
+endGame:
+	li a7, 10 
+	ecall
+	
 
 
 
@@ -1040,7 +1043,7 @@ drawSnake:
 	
 	
 	
-endGame:
+
 	lw s0, 4(sp)
     	lw s1, 8(sp)
     	lw s2, 12(sp)
