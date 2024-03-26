@@ -317,8 +317,8 @@ endGame:
 
 convertToStringPoints:
 	addi sp , sp , -24
-	sw s0 , 0(sp)
-	sw s1 , 4(sp)
+	sw ra,0(sp)
+	sw s0 , 4(sp)
 	sw s2 , 8(sp)
 	sw s3 , 12(sp)
 	sw s4 , 16(sp)
@@ -355,7 +355,7 @@ convertToStringPoints:
 		
 		# print the char
 		mv a0, t0
-		li a1, 1
+		li a1, 0
 		li a2, 25
 		
 		
@@ -368,7 +368,7 @@ convertToStringPoints:
 		
 		# print the char
 		mv a0, t0
-		li a1, 1
+		li a1, 0
 		li a2, 24
 		
 		
@@ -379,7 +379,7 @@ convertToStringPoints:
 		li t0, 0
 		addi t0, t0, 48
 		mv a0, t0
-		li a1, 1
+		li a1, 0
 		li a2, 23
 		
 		
@@ -406,7 +406,7 @@ convertToStringPoints:
 			#ret
 			
 		mv a0, s2
-		li a1, 1
+		li a1, 0
 		li a2, 25
 		
 		
@@ -414,7 +414,7 @@ convertToStringPoints:
 		jal ra, printChar
 		
 		mv a0, s3
-		li a1, 1
+		li a1, 0
 		li a2, 24
 		
 		
@@ -422,7 +422,7 @@ convertToStringPoints:
 		
 		
 		mv a0, s4
-		li a1, 1
+		li a1, 0
 		li a2, 23
 		
 		
@@ -454,46 +454,40 @@ convertToStringPoints:
 		
 		# print using print printChar
 		mv a0, s3
-		li a1, 1
+		li a1, 0
 		li a2, 25
 		
-		addi sp, sp, -4
-		sw ra, 0(sp)
+		
 		jal ra, printChar
-		lw ra, 0(sp)
-		addi sp, sp, 4
+
 		
 		# second
 		mv a0, s4
-		li a1, 1
+		li a1, 0
 		li a2, 24
 		
-		addi sp, sp, -4
-		sw ra, 0(sp)
+		
 		jal ra, printChar
-		lw ra, 0(sp)
-		addi sp, sp, 4
+		
 		
 		# third
 		mv a0, s5
-		li a1, 1
+		li a1, 0
 		li a2, 23
 		
-		addi sp, sp, -4
-		sw ra, 0(sp)
+		
 		jal ra, printChar
-		lw ra, 0(sp)
-		addi sp, sp, 4
+		
 
 		j regis
 	regis:
-			
-		lw s0 , 0(sp)
-		lw s1 , 4(sp)
+		lw ra,0(sp)	
+		lw s0 , 4(sp)
 		lw s2 , 8(sp)
 		lw s3 , 12(sp)
 		lw s4 , 16(sp)
 		lw s5 , 20(sp)
+		
 		addi sp , sp , 24
 		ret
 
@@ -502,6 +496,13 @@ convertToStringPoints:
 
 		
 convertToStringTime:
+	addi sp , sp , -24
+	sw ra,0(sp)
+	sw s0 , 4(sp)
+	sw s2 , 8(sp)
+	sw s3 , 12(sp)
+	sw s4 , 16(sp)
+	sw s5 , 20(sp)
 	
 	li s0, 10 
 	
@@ -535,11 +536,9 @@ convertToStringTime:
 		li a1, 1
 		li a2, 25
 		
-		addi sp, sp, -4
-		sw ra, 0(sp)
+		
 		jal ra, printChar
-		lw ra, 0(sp)
-		addi sp, sp, 4
+		
 		
 		#Print zero
 		li t0, 0
@@ -550,11 +549,8 @@ convertToStringTime:
 		li a1, 1
 		li a2, 24
 		
-		addi sp, sp, -4
-		sw ra, 0(sp)
 		jal ra, printChar
-		lw ra, 0(sp)
-		addi sp, sp, 4
+		
 		
 		
 		li t0, 0
@@ -563,13 +559,9 @@ convertToStringTime:
 		li a1, 1
 		li a2, 23
 		
-		addi sp, sp, -4
-		sw ra, 0(sp)
 		jal ra, printChar
-		lw ra, 0(sp)
-		addi sp, sp, 4
 		
-		ret
+		j reg
 	two_digit:
 		rem t1, t0, s0 # set remainder to t0/10  12/10 = 2 right most dig
 		div t3, t0, s0 # get rid of right most digit 12/10 = 1
@@ -592,34 +584,21 @@ convertToStringTime:
 		li a1, 1
 		li a2, 25
 		
-		addi sp, sp, -4
-		sw ra, 0(sp)
-		
 		jal ra, printChar
-		lw ra, 0(sp)
-		addi sp, sp, 4
 		
 		mv a0, s3
 		li a1, 1
 		li a2, 24
 		
-		addi sp, sp, -4
-		sw ra, 0(sp)
 		jal ra, printChar
-		lw ra, 0(sp)
-		addi sp, sp, 4
 		
 		mv a0, s4
 		li a1, 1
 		li a2, 23
 		
-		addi sp, sp, -4
-		sw ra, 0(sp)
 		jal ra, printChar
-		lw ra, 0(sp)
-		addi sp, sp, 4
 		
-		ret
+		j reg
 		
 		
 	
@@ -647,34 +626,32 @@ convertToStringTime:
 		li a1, 1
 		li a2, 25
 		
-		addi sp, sp, -4
-		sw ra, 0(sp)
 		jal ra, printChar
-		lw ra, 0(sp)
-		addi sp, sp, 4
 		
 		# second
 		mv a0, s4
 		li a1, 1
 		li a2, 24
 		
-		addi sp, sp, -4
-		sw ra, 0(sp)
 		jal ra, printChar
-		lw ra, 0(sp)
-		addi sp, sp, 4
 		
 		# third
 		mv a0, s5
 		li a1, 1
 		li a2, 23
 		
-		addi sp, sp, -4
-		sw ra, 0(sp)
 		jal ra, printChar
-		lw ra, 0(sp)
-		addi sp, sp, 4
-
+		j reg
+	reg:
+		lw ra,0(sp)	
+		lw s0 , 4(sp)
+		lw s2 , 8(sp)
+		lw s3 , 12(sp)
+		lw s4 , 16(sp)
+		lw s5 , 20(sp)
+		
+		addi sp , sp , 24
+		
 		ret
 	
 #-------------------------------------------------------------------------------
@@ -742,31 +719,31 @@ gameLoop:
 	j direction
 	
 direction:
+	# Print the Game time on Display  
 	addi sp, sp , -4
 	sw ra, 0(sp)
 	jal ra, convertToStringTime
 	lw ra, 0(sp)
 	addi sp, sp, 4
 	
-	
+	# Print the points on the Display 
 	addi sp, sp , -4
 	sw ra, 0(sp)
-	#jal ra, convertToStringPoints
+	jal ra, convertToStringPoints
 	lw ra, 0(sp)
 	addi sp, sp, 4
 	
 	
-	
+	# Checking if the snake hits the wall
 	addi sp, sp , -4
 	sw ra, 0(sp)
-	##### maybe call wall condition here 	
-	jal ra, wallCheck                              ###################
+	jal ra, wallCheck                              
 	lw ra, 0(sp)
 	addi sp, sp, 4
 	
-	
+	# Checking if the snake eats(collides) with the apple 
 	addi sp, sp , -4
-	sw ra, 0(sp)                                                      ############################
+	sw ra, 0(sp)                                                     
 	jal ra, eatApple
 	lw ra, 0(sp)
 	addi sp, sp, 4
@@ -775,16 +752,16 @@ direction:
 	la t5, keyInput
 	lw t6,0(t5)
 		
-	li t1,0x77   #w #up
+	li t1,0x77                              #w #up
 	beq t1,t6, moveUp
 	
-	li t2,0x61   #a #left
+	li t2,0x61                             #a #left
 	beq t2,t6, moveLeft
 	
-	li t3,0x73   #s #down
+	li t3,0x73                              #s #down
 	beq t3,t6, moveDown
 	
-	li t4,0x64   #d #right
+	li t4,0x64                              #d #right
 	beq t4,t6, moveRight	
 	
 
@@ -796,6 +773,7 @@ direction:
 
 				
 moveRight:
+	# Moves the snake in right direction by adding 1 column 
 	  
 	la s0, SNAKE_HEAD_COL
 	lw s2, 0(s0) 
@@ -805,30 +783,31 @@ moveRight:
 	
 	
 	la s4, COMPONENT_ONE_COL
-	lw s6, 0(s4)                      ### value for the next component
+	lw s6, 0(s4)                                                             # value for the next component
 	sw s2, 0(s4)
 	la s5, COMPONENT_ONE_ROW
-	lw s7, 0(s5)                       ### value for the next component
+	lw s7, 0(s5)                                                             # value for the next component
 	sw s3, 0(s5)
 	
-	addi s2, s2,1           ## update head
+	addi s2, s2,1           						 # update head by adding 1 column
 	sw s2, 0(s0)
 	
 	la s8, COMPONENT_TWO_COL
-	lw s10, 0(s8)                      ### value for the next component
+	lw s10, 0(s8)                                                            # value for the next component
 	sw s6, 0(s8)
 	la s9, COMPONENT_TWO_ROW
-	lw s11, 0(s9)                       ### value for the next component
+	lw s11, 0(s9)                                                            # value for the next component
 	sw s7, 0(s9)
 	
 	
 	la t0, COMPONENT_THREE_COL
-	lw t2, 0(t0)                      ### value for the next component
+	lw t2, 0(t0)                                                             # value for the next component
 	sw s10, 0(t0)
 	la t1, COMPONENT_THREE_ROW
-	lw t3, 0(t1)                       ### value for the next component
+	lw t3, 0(t1)                                                            # value for the next component
 	sw s11, 0(t1)
 	
+	# Clear the last component 
          mv a1, t3
 	 mv a2, t2
 	 li a0, 0x20
@@ -841,6 +820,7 @@ moveRight:
 	j waitfortimer
     	
 moveLeft:
+	# Moves the snake in left direction by subtracting 1 column 
 	la s0, SNAKE_HEAD_COL
 	lw s2, 0(s0) 
 	la s1, SNAKE_HEAD_ROW      
@@ -848,30 +828,31 @@ moveLeft:
 		
 	
 	la s4, COMPONENT_ONE_COL
-	lw s6, 0(s4)                      ### value for the next component
+	lw s6, 0(s4)                                                       # value for the next component
 	sw s2, 0(s4)
 	la s5, COMPONENT_ONE_ROW
-	lw s7, 0(s5)                       ### value for the next component
+	lw s7, 0(s5)                                                       # value for the next component
 	sw s3, 0(s5)
 	
-	addi s2, s2,-1           ## update head
+	addi s2, s2,-1                                                     # update head by subtracting 1 column
 	sw s2, 0(s0)
 	
 	la s8, COMPONENT_TWO_COL
-	lw s10, 0(s8)                      ### value for the next component
+	lw s10, 0(s8)                                                      # value for the next component
 	sw s6, 0(s8)
 	la s9, COMPONENT_TWO_ROW
-	lw s11, 0(s9)                       ### value for the next component
+	lw s11, 0(s9)                                                      # value for the next component
 	sw s7, 0(s9)
 	
 	
 	la t0, COMPONENT_THREE_COL
-	lw t2, 0(t0)                      ### value for the next component
+	lw t2, 0(t0)                                                       # value for the next component
 	sw s10, 0(t0)
 	la t1, COMPONENT_THREE_ROW
-	lw t3, 0(t1)                       ### value for the next component
+	lw t3, 0(t1)                                                       # value for the next component
 	sw s11, 0(t1)
 	
+	# Clear the last component 
          mv a1, t3
 	 mv a2, t2
 	 li a0, 0x20
@@ -886,6 +867,7 @@ moveLeft:
     	
 
 moveUp:
+	# Moves the snake in upwards direction by subtracting 1 row 
 	la s0, SNAKE_HEAD_COL
 	lw s2, 0(s0) 
 	la s1, SNAKE_HEAD_ROW      
@@ -893,30 +875,31 @@ moveUp:
 	
 	
 	la s4, COMPONENT_ONE_COL
-	lw s6, 0(s4)                      ### value for the next component
+	lw s6, 0(s4)                                                      # value for the next component
 	sw s2, 0(s4)
 	la s5, COMPONENT_ONE_ROW
-	lw s7, 0(s5)                       ### value for the next component
+	lw s7, 0(s5)                                                      # value for the next component
 	sw s3, 0(s5)
 	
-	addi s3, s3,-1           ## update head
+	addi s3, s3,-1                                                    # update head by subtracting 1 row
 	sw s3, 0(s1)
 	
 	la s8, COMPONENT_TWO_COL
-	lw s10, 0(s8)                      ### value for the next component
+	lw s10, 0(s8)                                                     # value for the next component
 	sw s6, 0(s8)
 	la s9, COMPONENT_TWO_ROW
-	lw s11, 0(s9)                       ### value for the next component
+	lw s11, 0(s9)                                                     # value for the next component
 	sw s7, 0(s9)
 	
 	
 	la t0, COMPONENT_THREE_COL
-	lw t2, 0(t0)                      ### value for the next component
+	lw t2, 0(t0)                      				  # value for the next component
 	sw s10, 0(t0)
 	la t1, COMPONENT_THREE_ROW
-	lw t3, 0(t1)                       ### value for the next component
+	lw t3, 0(t1)                       			          # value for the next component
 	sw s11, 0(t1)
 	
+	# Clear the last component 
          mv a1, t3
 	 mv a2, t2
 	 li a0, 0x20
@@ -931,6 +914,7 @@ moveUp:
 	j waitfortimer
 
 moveDown:
+	# Moves the snake in downwards direction by adding 1 down 
 	la s0, SNAKE_HEAD_COL
 	lw s2, 0(s0) 
 	la s1, SNAKE_HEAD_ROW      
@@ -938,30 +922,31 @@ moveDown:
 	
 	
 	la s4, COMPONENT_ONE_COL
-	lw s6, 0(s4)                      ### value for the next component
+	lw s6, 0(s4)                                                             # value for the next component
 	sw s2, 0(s4)
 	la s5, COMPONENT_ONE_ROW
-	lw s7, 0(s5)                       ### value for the next component
+	lw s7, 0(s5)                                                             # value for the next component
 	sw s3, 0(s5)
 	
-	addi s3, s3,1           ## update head
+	addi s3, s3,1           						 # update head by adding 1 row
 	sw s3, 0(s1)
 	
 	la s8, COMPONENT_TWO_COL
-	lw s10, 0(s8)                      ### value for the next component
+	lw s10, 0(s8)                                                            # value for the next component
 	sw s6, 0(s8)
 	la s9, COMPONENT_TWO_ROW
-	lw s11, 0(s9)                       ### value for the next component
+	lw s11, 0(s9)                                                            # value for the next component
 	sw s7, 0(s9)
 	
 	
 	la t0, COMPONENT_THREE_COL
-	lw t2, 0(t0)                      ### value for the next component
-	sw s10, 0(t0)
+	lw t2, 0(t0)                                                             # value for the next component
+	sw s10, 0(t0) 
 	la t1, COMPONENT_THREE_ROW
-	lw t3, 0(t1)                       ### value for the next component
+	lw t3, 0(t1)                                                              # value for the next component
 	sw s11, 0(t1)
 	
+	# Clear the last component 
          mv a1, t3
 	 mv a2, t2
 	 li a0, 0x20
@@ -996,7 +981,7 @@ drawSnake:
 	jal printChar
 	
 	
-	########################################
+
 	# SNAKE  BODY POSITION
 	
 	      # 1st component 
