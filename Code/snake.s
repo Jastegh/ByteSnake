@@ -1054,7 +1054,21 @@ endGame:
 	addi sp,sp 4
 	ret
 	
-
+#-------------------------------------------------------------------------------
+# random
+#   This function generates a random number between 0 to 8 
+#   which is used in printing apple
+# 
+#-------------------------------------------------------------------------------
+#
+#       Args: None
+# # Register Usage: 
+#	a0: loads  the address of XiVar
+#      to: stores the value of XiVar
+#      t1: stores the value of aVar
+#      t2: stores the value of cVar
+#      t3: stores the value of mVar
+#-------------------------------------------------------------------------------
 
 
 random:
