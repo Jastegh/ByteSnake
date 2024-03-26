@@ -55,7 +55,7 @@ SNAKE_BODY_1:        .asciz  "1"
 SNAKE_BODY_2:        .asciz  "2"
 SNAKE_BODY_3:        .asciz  "3"
 
-Have_eaten:          .word   0
+
 POINTS:              .word    0
 SNAKE_HEAD_ROW:          .word  5
 SNAKE_HEAD_COL:           .word  10
@@ -289,11 +289,15 @@ printApple:
 	jal ra, random
 	mv s0, a0                                     # row
 	addi s0,s0,1                                  # add 1
+	la t0, APPLE_ROW
+	sw s0, 0(t0)
 	
 	jal ra, random
 	mv s1, a0                                     #column	
 	addi s1,s1, 1                                 #add 1
-	     
+	la t1, APPLE_COL
+	sw s1, 0(t1)
+	
 	# Print apple
 	la t0, APPLE
 	lb a0, 0(t0)
@@ -308,6 +312,21 @@ printApple:
 	
 	ret
 
+#-------------------------------------------------------------------------------
+# timeCheck
+#   This function whether the GAME_TIME is 0 and terminates the game accordingly
+# 
+#-------------------------------------------------------------------------------
+#
+# Register Usage:
+#
+#	t0: loads the value of global variable GAME_TIME	
+#
+#-------------------------------------------------------------------------------
+timeCheck:
+	lw t0, GAME_TIME
+	beqz t0, endGame
+	ret
 
 #-------------------------------------------------------------------------------
 # wallCheck
@@ -669,34 +688,38 @@ convertToStringTime:
 #
 #-------------------------------------------------------------------------------	
 eatApple:
-	la t0, SNAKE_HEAD_ROW
-	la t1, SNAKE_HEAD_COL
-	lw t2, 0(t0)
-	lw t3, 0(t1)
+	la s0, SNAKE_HEAD_ROW
+	la s1, SNAKE_HEAD_COL
+	lw s2, 0(s0)
+	lw s3, 0(s1)
 	
-	la t4, APPLE_ROW
-	la t5, APPLE_COL
-	lw t6, 0(t4)
-	lw a1, 0(t5)
+	la s4, APPLE_ROW
+	la s5, APPLE_COL
+	lw s6, 0(s4)
+	lw a1, 0(s5)
 	
-	beq t2,t6, secondcheck
+	beq s2,s6, secondcheck
 	ret 
 secondcheck:
-	beq t3,a1, printAgain
+	beq s3,a1, printAgain
 	ret
+	
 printAgain:
-	la t0, Have_eaten
-	li t1, 1
-	sw t1, 0(t0)
 	
 	#add bonus time
-	lw t4, BONUS_TIME
+	lw s4, BONUS_TIME
 	
-	la t5, GAME_TIME
-	lw t6, 0(t5)
+	la s5, GAME_TIME
+	lw s6, 0(s5)
 	
-	add t6, t6, t4
-	sw t6, 0(t5)
+	add s6, s6, s4
+	sw s6, 0(s5)
+	
+	# add points
+	la s7, POINTS
+	lw s8, 0(s7)
+	addi s8,s8, 1
+	sw s8,0(s7)
 	
 	# print new apple	
 	addi sp, sp, -4
@@ -716,6 +739,13 @@ direction:
 	addi sp, sp , -4
 	sw ra, 0(sp)
 	jal ra, convertToStringTime
+	lw ra, 0(sp)
+	addi sp, sp, 4
+	
+	# Checking if the time has finished 
+	addi sp, sp , -4
+	sw ra, 0(sp)
+	jal ra, timeCheck
 	lw ra, 0(sp)
 	addi sp, sp, 4
 	
