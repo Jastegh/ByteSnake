@@ -297,7 +297,7 @@ wallCheck:
 	
 	li t2, 10
 	li t3, 20
-	li t4, 1
+	li t4, 0
 	# row condition
 	bge  t0, t2, endGame
 	ble t0,t4 endGame
@@ -1006,7 +1006,7 @@ drawSnake:
 	lw t3, 0(t2)
 	
 	# Print the snake body
-	la t0, SNAKE_BODY_1                       # SNAKE_BODY stores *
+	la t0, SNAKE_BODY                      # SNAKE_BODY stores *
 	lb a0, 0(t0)
 	mv a1, t1
 	mv a2, t3
@@ -1020,7 +1020,7 @@ drawSnake:
 	lw t3, 0(t2)
 		
 	# Print the snake body
-	la t0, SNAKE_BODY_2
+	la t0, SNAKE_BODY
 	lb a0, 0(t0)
 	mv a1, t1
 	mv a2, t3
@@ -1034,7 +1034,7 @@ drawSnake:
 	lw t3, 0(t2)
 		
 	# Print the snake body
-	la t0, SNAKE_BODY_3
+	la t0, SNAKE_BODY
 	lb a0, 0(t0)
 	mv a1, t1
 	mv a2, t3
