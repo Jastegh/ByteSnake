@@ -688,6 +688,18 @@ convertToStringTime:
 #
 #-------------------------------------------------------------------------------	
 eatApple:
+	addi sp, sp, -40	
+	sw ra, 0(sp)
+	sw s0, 4(sp)
+	sw s1, 8(sp)
+	sw s2, 12(sp)
+	sw s3, 16(sp)
+	sw s4, 20(sp)
+	sw s5, 24(sp)
+	sw s6, 28(sp)
+	sw s7, 32(sp)
+	lw s8, 36(sp)
+	
 	la s0, SNAKE_HEAD_ROW
 	la s1, SNAKE_HEAD_COL
 	lw s2, 0(s0)
@@ -699,10 +711,10 @@ eatApple:
 	lw a1, 0(s5)
 	
 	beq s2,s6, secondcheck
-	ret 
+	j saveregistor 
 secondcheck:
 	beq s3,a1, printAgain
-	ret
+	j saveregistor
 	
 printAgain:
 	
@@ -722,12 +734,26 @@ printAgain:
 	sw s8,0(s7)
 	
 	# print new apple	
-	addi sp, sp, -4
-	sw ra, 0(sp)
-	jal printApple
+	jal printApple	
+	
+	j saveregistor 
+	
+saveregistor:
 	lw ra, 0(sp)
-	addi sp, sp, 4
-	ret
+    	lw s0, 4(sp)
+    	lw s1, 8(sp)
+    	lw s2, 12(sp)
+    	lw s3, 16(sp)
+    	lw s4, 20(sp)
+    	lw s5, 24(sp)
+    	lw s6, 28(sp)
+    	lw s7, 32(sp)
+    	lw s8, 36(sp)
+    	
+	addi sp, sp, 40
+	
+    	ret
+	
 	
 
 gameLoop:	
