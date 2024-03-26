@@ -289,12 +289,16 @@ printApple:
 	jal ra, random
 	mv s0, a0                                     # row
 	addi s0,s0,1                                  # add 1
+	
+	# updating the row in global variable
 	la t0, APPLE_ROW
 	sw s0, 0(t0)
 	
 	jal ra, random
 	mv s1, a0                                     #column	
 	addi s1,s1, 1                                 #add 1
+	
+	# updating the column in global variable
 	la t1, APPLE_COL
 	sw s1, 0(t1)
 	
@@ -304,6 +308,7 @@ printApple:
 	mv a1,s0
 	mv a2,s1
 	jal ra, printChar
+	
 	
 	lw s0, 4(sp)
 	lw s1, 8(sp)
