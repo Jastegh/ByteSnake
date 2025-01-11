@@ -1,5 +1,5 @@
 
-# ByteSnake
+# ByteSnake 🐍
 
 ## 🎮 Overview
 This project is a functional **Snake game** implemented in **RISC-V Assembly**. It demonstrates efficient game logic, real-time responsiveness, and system-level programming techniques. The game uses:
@@ -64,13 +64,13 @@ This project is a functional **Snake game** implemented in **RISC-V Assembly**. 
 Contributions are welcome! Feel free to fork the repository, create a branch, and submit a pull request.
 
 ## 📜 License
-This project is licensed under the [MIT License](LICENSE).
+This project is licensed under the [Apache 2.0 License](LICENSE).
 
 
-
+<!-- 
 ## Steps to run 🚀
    - Open displayDemo.s inside of rars
    - Assemble the program
    - Open Tools > Keyboard and Display MMIO Simulator
    - Click the "Connect to Program" button in the Keyboard and Display MMIO Simulator
-   - Run the program
+   - Run the program -->
